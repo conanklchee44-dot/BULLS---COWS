@@ -1,0 +1,449 @@
+@font-face {
+    font-family: 'Minecraftia';
+    src: url('../assets/fonts/minecraftia.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Arcade In';
+    src: url('../assets/fonts/arcade in.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Arcade Out';
+    src: url('../assets/fonts/arcade out.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+:root {
+    --font-family: 'Minecraftia';
+    --theme-color: #bfa76a;
+    --theme-dark: rgb(81, 34, 9);
+    --theme-light: #fffbe6;
+    --theme-background: #222;
+}
+body {
+    font-family: var(--font-family), monospace, Arial, sans-serif;
+    background: var(--theme-background);
+    color: var(--theme-light);
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 var(--theme-color), 0 2px 0 var(--theme-light);
+}
+h1 {
+    position: absolute;
+    font-size: 128px;
+    font-family: 'Arcade In', monospace;
+    top: -108px;
+    color: var(--theme-dark);
+    left: 16px;
+    letter-spacing: 4px;
+    text-shadow: 2px 2px 0 #fffbe6, 0 4px 0 var(--theme-color);
+}
+div {
+    background-color: transparent;
+}
+#guess-form {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-family: 'Minecraftia', monospace;
+}
+
+#guess-input {
+    border: 3px solid var(--theme-dark);
+    background: var(--theme-light);
+    color: #3a2c0a;
+    font-family: var(--font-family), monospace;
+    box-shadow: 0 0 0 2px var(--theme-color) inset;
+    transition: border 0.1s, box-shadow 0.1s;
+    letter-spacing: 2px;
+}
+#guess-input:focus {
+    border: 3px solid var(--theme-color);
+    box-shadow: 0 0 0 2px var(--theme-color) inset;
+}
+
+#submit-guess {
+    background: var(--theme-color);
+    color: var(--theme-light);
+    border: 3px solid var(--theme-dark);
+    border-radius: 0;
+    padding: 7px 18px;
+    font-size: 1em;
+    font-family: var(--font-family), monospace;
+    cursor: pointer;
+    box-shadow: 0 2px var(--theme-color), 0 0 0 2px var(--theme-light) inset;
+    text-shadow: 1px 1px 0 var(--theme-dark);
+    transition: background 0.1s, color 0.1s, border 0.1s;
+}
+
+#guesses-list {
+    margin-top: 18px;
+    width: 100%;
+    background: rgba(255,255,255,0.10);
+    border: 3px solid var(--theme-dark);
+    border-radius: 0;
+    padding: 10px 0 10px 0;
+    min-height: 40px;
+    box-shadow: 0 2px 0 var(--theme-color), 0 0 0 2px var(--theme-light) inset;
+    font-family: var(--font-family);
+    color: var(--theme-light);
+}
+#guesses-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 18px;
+    font-family: var(--font-family), monospace;
+    font-size: 1.1em;
+    color: var(--theme-light);
+    border-bottom: 2px solid #e6c97a33;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0 var(--theme-light);
+}
+#guesses-list li:last-child {
+    border-bottom: none;
+}
+
+
+#stats-container, #game-container {
+    background: rgba(255,255,255,0.15);
+    border-radius: 0;
+    box-shadow: 0 4px 0 var(--theme-color), 0 0 0 4px var(--theme-light) inset;
+    border: 3px solid var(--theme-dark);
+    padding: 20px 28px;
+    margin: 16px 0;
+    min-width: 180px;
+    max-width: 320px;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    font-family: var(--font-family), monospace;
+}
+
+#bulls-container, #cows-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.10);
+    border: 3px solid var(--theme-dark);
+    box-shadow: 0 2px 0 var(--theme-color), 0 0 0 2px var(--theme-light) inset;
+    padding: 8px 14px;
+    font-family: var(--font-family), monospace;
+    margin-bottom: 0.5rem;
+}
+#bulls-container img, #cows-container img, .icon {
+    width: 48px;
+    height: 48px;
+    image-rendering: pixelated;
+}
+#bulls-container p, #cows-container p {
+    color: var(--theme-light);
+    text-shadow: 1px 1px 0 var(--theme-dark);
+    font-family: var(--font-family), monospace;
+}
+
+#stats-container {
+    position: absolute;
+    top: 108px;
+    left: 16px;
+    text-align: left;
+    z-index: 2;
+    font-family: var(--font-family), monospace;
+}
+
+#stats-container p {
+    margin: 0 0 6px 0;
+    font-size: 1.1em;
+    color: var(--theme-light);
+    text-shadow: 1px 1px 0 var(--theme-dark);
+    font-family: var(--font-family), monospace;
+}
+
+#game-container {
+    position: absolute;
+    left: 50%;
+    top: 220px;
+    transform: translateX(-50%);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 1;
+    font-family: var(--font-family), monospace;
+}
+
+#stats-container {
+    position: absolute;
+    top: 108px;
+    left: 16px;
+    text-align: left;
+    z-index: 2;
+}
+
+#game-container {
+    position: absolute;
+    left: 50%;
+    top: 220px;
+    transform: translateX(-50%);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    z-index: 1;
+}
+#topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 88px;
+    background-color: burlywood;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 8px solid rgb(81, 34, 9);
+}
+.glow {
+    filter: 
+        invert(1)
+        brightness(10)
+        contrast(200)
+        grayscale(99999999999999999)
+        drop-shadow(0 0 12px white);
+    box-shadow: none;
+    transition: filter 240 ms ease-in-out;
+}
+
+#stats-container {
+    position: absolute;
+    top: 108px;
+    left: 16px;
+    text-align: left;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+}
+.header {
+  background: #ededed;
+  font-size: 2rem;
+  padding: 1rem;
+  text-align: left;
+  margin-bottom: 1rem;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.body-layout {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+.stats-container {
+  flex: 0 0 18%;
+  background: #333;
+  font-size: 1.2rem;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.xp-bar {
+  flex: 0 0 2%;
+  background: var(--theme-background);
+  writing-mode: vertical-rl;
+  text-align: center;
+  font-size: 1rem;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.game-section {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.game-container {
+  background: var(--theme-background);
+  font-size: 1.2rem;
+  padding: 1rem;
+  flex: 1;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.form {
+  background: #333;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.form-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.form-buttons button {
+  background: #555;
+  color: #fff;
+  border: 4px solid #fff;
+  font-family: 'Minecraftia', monospace;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.side-section {
+  flex: 0 0 25%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.turn-stats-container, #turn-stats-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--theme-background);
+  border: 4px solid var(--theme-light);
+  box-shadow: 0 0 0 4px #222, 0 0 8px var(--theme-light);
+  padding: 1rem 0.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  position: static;
+  z-index: auto;
+  color: var(--theme-light);
+}
+#bulls-container, #cows-container {
+  width: 90%;
+  margin: 0.25rem auto;
+  background-color: var(--theme-background);
+}
+.difficulty {
+  background: var(--theme-background);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.difficulty-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+}
+.difficulty button {
+  background: #555;
+  color: #fff;
+  border: 4px solid #fff;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.player-choice {
+  background: var(--theme-background);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.player-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+}
+.player-choice button {
+  background: #555;
+  color: #fff;
+  border: 4px solid #fff;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+}
+.player-choice button.pressed {
+    background: var(--theme-dark);
+    color: var(--theme-light);
+    border-color: var(--theme-color);
+    box-shadow: inset 0 2px 8px #000, 0 0 0 2px var(--theme-light);
+    transform: translateY(2px);
+}
+
+.guess-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.guess-form label {
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+.guess-form input[type="text"] {
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: 4px solid #fff;
+  background: #222;
+  color: #fff;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+  outline: none;
+  width: 100%;
+}
+.guess-form button[type="submit"] {
+  background: #555;
+  color: #fff;
+  border: 4px solid #fff;
+  font-family: 'Press Start 2P', monospace, Arial, sans-serif;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #222, 0 0 8px #fff;
+  margin-top: 0.5rem;
+}
+
+button, .form-buttons button, .difficulty button, .player-choice button {
+    background: var(--theme-color);
+    color: var(--theme-light);
+    border: 3px solid var(--theme-dark);
+    border-radius: 0;
+    padding: 7px 18px;
+    font-size: 1em;
+    font-family: var(--font-family), monospace;
+    cursor: pointer;
+    box-shadow: 0 2px var(--theme-color), 0 0 0 2px var(--theme-light) inset;
+    text-shadow: 1px 1px 0 var(--theme-dark);
+    transition: background 0.1s, color 0.1s, border 0.1s;
+    margin: 0.25rem 0;
+}
+button:active, .form-buttons button:active, .difficulty button:active, .player-choice button:active {
+    background: var(--theme-dark);
+    color: var(--theme-light);
+    border-color: var(--theme-color);
+}
