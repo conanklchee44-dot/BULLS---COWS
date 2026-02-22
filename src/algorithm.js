@@ -1,8 +1,9 @@
-export function aiSolve(secret, onGuess) {
+export function aiSolve(secret, onGuess, digits = 4) {
     let possible = [];
-    for (let i = 0; i < 10000; i++) {
-        let s = i.toString().padStart(4, '0');
-        if (new Set(s).size === 4) possible.push(s);
+    const max = Math.pow(10, digits);
+    for (let i = 0; i < max; i++) {
+        let s = i.toString().padStart(digits, '0');
+        if (new Set(s).size === digits) possible.push(s);
     }
     let tries = 0;
 
@@ -28,8 +29,8 @@ export function aiSolve(secret, onGuess) {
         const { bulls, cows } = getBullsAndCows(secret, guess);
         tries++;
         onGuess(guess, bulls, cows, tries);
-        if (bulls === 4) {
-            onGuess(`AI solved in ${tries} tries!`, 4, 0, tries);
+        if (bulls === digits) {
+            onGuess(`AI solved in ${tries} tries!`, digits, 0, tries);
             return;
         }
         possible = filterPossible(possible, guess, bulls, cows);
