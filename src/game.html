@@ -24,6 +24,7 @@
                         pattern="\d{4}" placeholder="0123" required style="width:120px; font-size:1.2em; text-align:center;">
                         <button id="submit-guess" type="submit">Guess</button>
                         <button id="reset-game" type="button">Reset</button>
+                        <button id="reveal-secret" type="button">Reveal</button>
                     </form>
                     <div class="form-buttons">
                         <button>New game</button>
@@ -44,9 +45,9 @@
                 </div>
                 <div class="difficulty">
                     <div class="difficulty-title">difficulty</div>
-                    <button>easy</button>
-                    <button>medium</button>
-                    <button>hard</button>
+                    <button id="easy-btn" type="button">easy</button>
+                    <button id="medium-btn" type="button">medium</button>
+                    <button id="hard-btn" type="button">hard</button>
                 </div>
                 <div class="player-choice">
                     <div class="player-title">Computer or you</div>
@@ -56,7 +57,7 @@
 
                 <div id="ai-solve-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center; z-index:1000;">
                   <div style="background:var(--theme-background); border:4px solid var(--theme-light); padding:2rem; display:flex; flex-direction:column; align-items:center;">
-                    <label for="user-secret-input" style="color:var(--theme-light); font-family:var(--font-family); font-size:1.2rem;">Enter a 4-digit number for the AI to solve:</label>
+                                        <label id="ai-secret-label" for="user-secret-input" style="color:var(--theme-light); font-family:var(--font-family); font-size:1.2rem;">Enter a 4-digit number for the AI to solve:</label>
                     <input id="user-secret-input" type="text" maxlength="4" pattern="\d{4}" style="margin:1rem 0; font-size:1.5rem; text-align:center; font-family:var(--font-family);">
                     <button id="start-ai-solve" style="font-family:var(--font-family);">Start</button>
                     <button id="close-ai-solve" style="margin-top:0.5rem; font-family:var(--font-family);">Cancel</button>

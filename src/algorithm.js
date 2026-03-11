@@ -1,9 +1,12 @@
-export function aiSolve(secret, onGuess, digits = 4) {
+export function aiSolve(secret, onGuess, options = {}) {
+    const digits = options.digits ?? 4;
+    const allowRepeats = options.allowRepeats ?? false;
+
     let possible = [];
-    const max = Math.pow(10, digits);
+    const max = 10 ** digits;
     for (let i = 0; i < max; i++) {
         let s = i.toString().padStart(digits, '0');
-        if (new Set(s).size === digits) possible.push(s);
+        if (allowRepeats || new Set(s).size === digits) possible.push(s);
     }
     let tries = 0;
 
@@ -30,7 +33,6 @@ export function aiSolve(secret, onGuess, digits = 4) {
         tries++;
         onGuess(guess, bulls, cows, tries);
         if (bulls === digits) {
-            onGuess(`AI solved in ${tries} tries!`, digits, 0, tries);
             return;
         }
         possible = filterPossible(possible, guess, bulls, cows);

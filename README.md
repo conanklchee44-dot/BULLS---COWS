@@ -47,6 +47,3 @@ Exports the AI solving function. The AI uses a fast elimination strategy:
 ## Credits
 - Pixel font: Minecraftia
 - Sprites: Custom or open source
-
-## License
-MIT License

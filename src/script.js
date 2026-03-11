@@ -1,6 +1,12 @@
 import * as num from './num.js';
 import { aiSolve } from './algorithm.js';
 
+const DIFFICULTY_SETTINGS = {
+    easy: { digits: 3, allowRepeats: true },
+    medium: { digits: 4, allowRepeats: false },
+    hard: { digits: 5, allowRepeats: false }
+};
+
 // Utility functions
 function getBullsAndCows(secret, guess) {
     let bulls = 0, cows = 0;
@@ -15,16 +21,32 @@ function addGuess(guess, bulls, cows) {
     const li = document.createElement('li');
     li.innerHTML = 
     `${guess} <img src="${bullsIconSRC}" alt="Bulls" class="icon"> ${bulls} <img src="${cowsIconSRC}" alt="Cows" class="icon"> ${cows}`;
+// Universal elements
     // string for image inside li
     guessesList.appendChild(li);
 }
+
+function addRevealedSecretToList() {
+    if (!guessesList) return;
+    const existingReveal = guessesList.querySelector('.secret-reveal-item');
+    if (existingReveal) {
+        existingReveal.textContent = `SECRET: ${secret}`;
+        return;
+    }
+
+    const li = document.createElement('li');
+    li.className = 'secret-reveal-item';
+    li.textContent = `SECRET: ${secret}`;
+    guessesList.appendChild(li);
+}
 // Universal elements
-let digits = 4;
-let secret = num.getRandomNumber(digits, 'string');
+let secret = num.getRandomNumber(4, 'string');
 let guesses = [];
+let currentDifficulty = 'medium';
 const guessForm = document.getElementById('guess-form');
 const guessInput = document.getElementById('guess-input');
 const guessesList = document.getElementById('guesses-list');
+const revealSecretBtn = document.getElementById('reveal-secret');
 const bullsElem = document.getElementById('bulls');
 const cowsElem = document.getElementById('cows');
 const bullsIconSRC = "../assets/sprites/bull.png";
@@ -33,28 +55,15 @@ const cowsIconSRC = "../assets/sprites/cow.png";
 const aiSolveBtn = document.getElementById('ai-solve-btn');
 const youBtn = document.getElementById('you-btn');
 const aiSolveModal = document.getElementById('ai-solve-modal');
+const easyBtn = document.getElementById('easy-btn');
+const mediumBtn = document.getElementById('medium-btn');
+const hardBtn = document.getElementById('hard-btn');
+const aiSecretLabel = document.getElementById('ai-secret-label');
+let digits = DIFFICULTY_SETTINGS[currentDifficulty].digits;
+let allowRepeats = DIFFICULTY_SETTINGS[currentDifficulty].allowRepeats;
 const userSecretInput = document.getElementById('user-secret-input');
 const startAiSolveBtn = document.getElementById('start-ai-solve');
 const closeAiSolveBtn = document.getElementById('close-ai-solve');
-
-const easyBtn = document.querySelector('.difficulty button:nth-child(2)');
-const mediumBtn = document.querySelector('.difficulty button:nth-child(3)');
-const hardBtn = document.querySelector('.difficulty button:nth-child(4)');
-
-function setDifficulty(n) {
-    digits = n;
-    secret = num.getRandomNumber(digits, 'string');
-    guesses = [];
-    guessesList.innerHTML = '';
-    bullsElem.textContent = '0';
-    cowsElem.textContent = '0';
-    guessInput.maxLength = digits;
-    guessInput.placeholder = '0'.repeat(digits);
-}
-
-if (easyBtn) easyBtn.addEventListener('click', () => setDifficulty(3));
-if (mediumBtn) mediumBtn.addEventListener('click', () => setDifficulty(4));
-if (hardBtn) hardBtn.addEventListener('click', () => setDifficulty(5));
 
 function setModeButtonActive(btn) {
     aiSolveBtn.classList.remove('pressed');
@@ -62,14 +71,72 @@ function setModeButtonActive(btn) {
     if (btn) btn.classList.add('pressed');
 }
 
+function setDifficultyButtonActive(btn) {
+    easyBtn.classList.remove('pressed');
+    mediumBtn.classList.remove('pressed');
+    hardBtn.classList.remove('pressed');
+    if (btn) btn.classList.add('pressed');
+}
+
+function getDefaultPlaceholder() {
+    return Array.from({ length: digits }, (_, idx) => idx.toString()).join('');
+}
+
+function updateInputRules() {
+    if (guessInput) {
+        guessInput.maxLength = digits;
+        guessInput.pattern = `\\d{${digits}}`;
+        guessInput.placeholder = getDefaultPlaceholder();
+    }
+    if (userSecretInput) {
+        userSecretInput.maxLength = digits;
+        userSecretInput.pattern = `\\d{${digits}}`;
+        userSecretInput.placeholder = getDefaultPlaceholder();
+    }
+    if (aiSecretLabel) {
+        const repeatHint = allowRepeats ? ' Repeated digits are allowed.' : ' Digits must be unique.';
+        aiSecretLabel.textContent = `Enter a ${digits}-digit number for the AI to solve.${repeatHint}`;
+    }
+}
+
+function isValidCode(code) {
+    if (!new RegExp(`^\\d{${digits}}$`).test(code)) return false;
+    if (!allowRepeats && new Set(code).size !== digits) return false;
+    return true;
+}
+
+function resetGameState() {
+    guesses = [];
+    guessesList.innerHTML = '';
+    bullsElem.textContent = '0';
+    cowsElem.textContent = '0';
+    secret = num.getRandomNumber(digits, 'string', allowRepeats);
+}
+
+function applyDifficulty(level, btn) {
+    currentDifficulty = level;
+    digits = DIFFICULTY_SETTINGS[level].digits;
+    allowRepeats = DIFFICULTY_SETTINGS[level].allowRepeats;
+    setDifficultyButtonActive(btn);
+    updateInputRules();
+    resetGameState();
+}
+
 // Set 'You' as default pressed on load
 setModeButtonActive(youBtn);
+setDifficultyButtonActive(mediumBtn);
+updateInputRules();
+secret = num.getRandomNumber(digits, 'string', allowRepeats);
 
 if (guessForm) {
     guessForm.addEventListener('submit', function(e) {
         e.preventDefault();
         const guess = guessInput.value;
-        if (guess.length !== digits || !new RegExp(`^\\d{${digits}}$`).test(guess)) return;
+        if (!isValidCode(guess)) {
+            guessInput.style.border = '2px solid red';
+            return;
+        }
+        guessInput.style.border = '';
         const { bulls, cows } = getBullsAndCows(secret, guess);
         bullsElem.textContent = bulls;
         cowsElem.textContent = cows;
@@ -82,12 +149,24 @@ if (guessForm) {
 const resetBtn = document.getElementById('reset-game');
 if (resetBtn) {
     resetBtn.addEventListener('click', function() {
-        guesses = [];
-        guessesList.innerHTML = '';
-        bullsElem.textContent = '0';
-        cowsElem.textContent = '0';
-        secret = num.getRandomNumber(digits, 'string');
+        resetGameState();
     });
+}
+
+if (revealSecretBtn) {
+    revealSecretBtn.addEventListener('click', function() {
+        addRevealedSecretToList();
+    });
+}
+
+if (easyBtn) {
+    easyBtn.addEventListener('click', () => applyDifficulty('easy', easyBtn));
+}
+if (mediumBtn) {
+    mediumBtn.addEventListener('click', () => applyDifficulty('medium', mediumBtn));
+}
+if (hardBtn) {
+    hardBtn.addEventListener('click', () => applyDifficulty('hard', hardBtn));
 }
 
 if (aiSolveBtn && aiSolveModal) {
@@ -112,10 +191,11 @@ if (youBtn) {
 if (startAiSolveBtn && userSecretInput) {
     startAiSolveBtn.addEventListener('click', () => {
         const userSecret = userSecretInput.value;
-        if (!new RegExp(`^\\d{${digits}}$`).test(userSecret)) {
+        if (!isValidCode(userSecret)) {
             userSecretInput.style.border = '2px solid red';
             return;
         }
+        userSecretInput.style.border = '';
         aiSolveModal.style.display = 'none';
         userSecretInput.value = '';
         guessesList.innerHTML = '';
@@ -126,7 +206,7 @@ if (startAiSolveBtn && userSecretInput) {
             addGuess(guess, bulls, cows);
             bullsElem.textContent = bulls;
             cowsElem.textContent = cows;
-            if (bulls === digits) setModeButtonActive(youBtn);
-        }, digits);
+            if (bulls === digits) setModeButtonActive(youBtn); // Return to You mode after solve
+        }, { digits, allowRepeats });
     });
 }
